@@ -1,59 +1,219 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# TC Invitation Mail
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+A Laravel 12 application for managing bulk email invitations with Excel integration and delivery tracking.
 </p>
 
-## About Laravel
+## About This Project
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+**TC Invitation Mail** is a web application built with Laravel 12 that simplifies bulk email campaigns. Features include:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- 📊 **Excel Integration** - Upload and parse Excel files with recipient data
+- 🏷️ **Column Mapping** - Map Excel columns to custom labels
+- 📧 **Bulk Email** - Send invitation emails to multiple recipients
+- 📈 **Delivery Tracking** - Monitor email delivery status with detailed reports
+- 💾 **Data Management** - Save and manage recipient lists
+- 🎨 **Modern UI** - Built with Tailwind CSS and responsive design
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Tech Stack
 
-## Learning Laravel
+- **Backend**: Laravel 12 Framework
+- **Frontend**: Blade Templates + Tailwind CSS + Vite
+- **Data Processing**: PHPOffice/PhpSpreadsheet
+- **Database**: SQLite (default) / MySQL / PostgreSQL
+- **Testing**: PHPUnit
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Quick Start
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Installation (One Command)
+```bash
+composer run setup
+```
 
-## Laravel Sponsors
+This will automatically:
+1. Install all PHP dependencies
+2. Install all Node.js dependencies
+3. Generate application key
+4. Run database migrations
+5. Build frontend assets
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Start Development Server
+```bash
+# Option 1: Full development environment (recommended)
+composer run dev
 
-### Premium Partners
+# Option 2: Simple server only
+php artisan serve
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Visit `http://localhost:8000` in your browser.
 
-## Contributing
+## Complete Setup Guide
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+For detailed setup instructions, database schema, configuration options, and troubleshooting, see [SETUP.md](SETUP.md).
 
-## Code of Conduct
+## System Requirements
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- **PHP 8.2+**
+- **Node.js 18+**
+- **Composer**
+- **SQLite, MySQL, or PostgreSQL**
 
-## Security Vulnerabilities
+## Project Structure
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```
+├── app/
+│   ├── Http/Controllers/
+│   │   ├── ExcelController.php      # Excel upload & management
+│   │   └── MailController.php       # Email campaigns
+│   ├── Mail/
+│   │   └── InvitationMail.php       # Email template
+│   └── Models/
+│       ├── ExcelColumnData.php
+│       ├── MailLog.php
+│       ├── MailLogDetail.php
+│       └── User.php
+├── database/
+│   └── migrations/                  # Database schema
+├── resources/
+│   ├── views/                       # Blade templates
+│   ├── css/                         # Tailwind styles
+│   └── js/                          # Frontend scripts
+├── routes/
+│   └── web.php                      # Application routes
+└── config/                          # Configuration files
+```
+
+## Core Features
+
+### 1. Excel Data Upload
+- Upload Excel files with recipient information
+- Automatic column detection
+- Custom column mapping (rename/organize)
+- Data preview before saving
+
+### 2. Recipient Management
+- View saved recipient lists
+- Edit column data
+- Delete records
+- Search and filter functionality
+
+### 3. Bulk Email Campaigns
+- Compose invitation emails
+- Select recipient source
+- Attach templates
+- Schedule sending
+
+### 4. Delivery Tracking
+- Real-time delivery status
+- Success/failure reports
+- Error logging
+- Recipient-level tracking
+- Campaign analytics
+
+## Dependencies Summary
+
+### PHP Packages (via Composer)
+- **laravel/framework ^12.0** - Web framework
+- **phpoffice/phpspreadsheet ^5.6** - Excel file processing
+- **laravel/tinker ^2.10.1** - Interactive shell
+- Development: Testing, code formatting, error handling
+
+### Node Packages (via npm)
+- **vite ^7.0** - Build tool & dev server
+- **tailwindcss ^4.0** - CSS framework
+- **laravel-vite-plugin ^2.0** - Laravel integration
+- **axios ^1.11** - HTTP client
+- **concurrently ^9.0** - Multi-process runner
+
+See [SETUP.md](SETUP.md) for the complete package list and versions.
+
+## Database Schema
+
+The application uses 4 main tables:
+
+1. **excel_column_data** - Stores imported Excel column data
+2. **mail_logs** - Tracks email campaigns
+3. **mail_log_details** - Individual email delivery records
+4. **users** - Application users
+
+## Configuration
+
+### Environment Variables (.env)
+
+```ini
+APP_NAME=TC Invitation Mail
+APP_ENV=local
+APP_DEBUG=true
+DB_CONNECTION=sqlite
+MAIL_MAILER=log
+MAIL_FROM_ADDRESS=noreply@example.com
+```
+
+## Running Tests
+
+```bash
+# Run all tests
+composer run test
+
+# Or directly
+php artisan test
+```
+
+## Database Management
+
+```bash
+# Run migrations
+php artisan migrate
+
+# Rollback migrations
+php artisan migrate:rollback
+
+# Reset database
+php artisan migrate:reset
+```
+
+## Development Commands
+
+```bash
+# Start full dev environment
+composer run dev
+
+# Start simple server
+php artisan serve
+
+# Build frontend
+npm run build
+
+# Dev frontend (with hot reload)
+npm run dev
+
+# Format code
+php artisan pint
+
+# Interactive shell
+php artisan tinker
+```
+
+## Troubleshooting
+
+**PHP not found?** Ensure PHP is installed and in your system PATH.
+
+**Composer install fails?** Try: `composer install --no-interaction`
+
+**Assets not loading?** Run: `npm install` then `npm run build`
+
+**Database errors?** Run: `php artisan migrate:reset` then `php artisan migrate`
+
+See [SETUP.md](SETUP.md) for detailed troubleshooting guide.
+
+## Resources
+
+- [Laravel Documentation](https://laravel.com/docs)
+- [Vite Guide](https://vitejs.dev)
+- [Tailwind CSS](https://tailwindcss.com)
+- [PHPSpreadsheet](https://phpspreadsheet.readthedocs.io)
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
