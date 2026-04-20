@@ -23,23 +23,19 @@ class ExcelController extends Controller
 
         try {
             $spreadsheet = IOFactory::load($file->getRealPath());
-            $worksheet = $spreadsheet->getActiveSheet();
-            $data = $worksheet->toArray();
+            $worksheet   = $spreadsheet->getActiveSheet();
+            $data        = $worksheet->toArray();
 
             $headers = [];
-            $rows = [];
+            $rows    = [];
 
             if (count($data) > 0) {
-                // Filter out fully empty rows
-                $data = array_filter($data, function ($row) {
-                    return count(array_filter($row)) > 0;
-                });
-
+                $data = array_filter($data, fn($row) => count(array_filter($row)) > 0);
                 $data = array_values($data);
 
                 if (count($data) > 0) {
                     $headers = array_shift($data);
-                    $rows = $data;
+                    $rows    = $data;
                 }
             }
 
@@ -51,9 +47,7 @@ class ExcelController extends Controller
     }
 
     /**
-     * Save a selected column's values as a comma-separated string (implode).
-     * Input:  column_index (which column), column_name (custom label), rows_data (JSON)
-     * Output: stored as "val1,val2,val3" in the `data` text column.
+     * Save a selected column as an imploded comma-separated string.
      */
     public function saveColumn(Request $request)
     {
@@ -64,8 +58,7 @@ class ExcelController extends Controller
             'values.*'     => 'nullable|string',
         ]);
 
-        // Filter out blanks, then implode into comma-separated string
-        $cleanValues = array_filter($request->values, fn($v) => $v !== null && $v !== '');
+        $cleanValues  = array_filter($request->values, fn($v) => $v !== null && $v !== '');
         $implodedData = ExcelColumnData::implodeValues(array_values($cleanValues));
 
         ExcelColumnData::create([
@@ -75,21 +68,75 @@ class ExcelController extends Controller
         ]);
 
         return redirect()->route('excel.saved')->with('success',
-            "Column \"{$request->column_name}\" saved successfully with " . count($cleanValues) . " values."
+            "Column \"{$request->column_name}\" saved with " . count($cleanValues) . " values."
         );
     }
 
     /**
-     * Show all saved column records.
-     * Explodes the stored comma-separated string back into an array for display.
+     * Show all saved records (exploded for display).
      */
     public function savedData()
     {
         $records = ExcelColumnData::latest()->get()->map(function ($record) {
-            $record->values = $record->explodeValues(); // explode back to array
+            $record->values = $record->explodeValues();
             return $record;
         });
 
         return view('saved-data', compact('records'));
+    }
+
+    /**
+     * Show the edit form for a single record.
+     */
+    public function edit($id)
+    {
+        $record         = ExcelColumnData::findOrFail($id);
+        $record->values = $record->explodeValues();
+        return view('edit-record', compact('record'));
+    }
+
+    /**
+     * Update a record — accepts individual value fields,
+     * implodes them back into a comma-separated string.
+     */
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'column_name'  => 'required|string|max:255',
+            'excel_column' => 'required|string|max:255',
+            'values'       => 'required|array|min:1',
+            'values.*'     => 'nullable|string',
+        ]);
+
+        $record = ExcelColumnData::findOrFail($id);
+
+        $cleanValues  = array_values(
+            array_filter($request->values, fn($v) => $v !== null && trim($v) !== '')
+        );
+        $implodedData = ExcelColumnData::implodeValues($cleanValues);
+
+        $record->update([
+            'column_name'  => $request->column_name,
+            'excel_column' => $request->excel_column,
+            'data'         => $implodedData,
+        ]);
+
+        return redirect()->route('excel.saved')->with('success',
+            "Record \"{$record->column_name}\" updated with " . count($cleanValues) . " values."
+        );
+    }
+
+    /**
+     * Delete a saved record permanently.
+     */
+    public function destroy($id)
+    {
+        $record = ExcelColumnData::findOrFail($id);
+        $name   = $record->column_name;
+        $record->delete();
+
+        return redirect()->route('excel.saved')->with('success',
+            "Record \"{$name}\" deleted successfully."
+        );
     }
 }

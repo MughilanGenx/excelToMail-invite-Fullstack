@@ -95,6 +95,36 @@
         .badge-green  { background: var(--success-bg); color: var(--success-text); }
         .badge-gray   { background: #f1f5f9; color: var(--text-secondary); }
 
+        .action-btns { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+
+        .btn-edit {
+            display: inline-flex; align-items: center; gap: 0.3rem;
+            background: #eff6ff; color: #2563eb;
+            border: 1px solid #bfdbfe;
+            padding: 0.3rem 0.85rem; border-radius: 8px;
+            font-size: 0.78rem; font-weight: 600;
+            text-decoration: none; transition: background 0.2s;
+        }
+        .btn-edit:hover { background: #dbeafe; color: #1d4ed8; }
+
+        .btn-delete {
+            display: inline-flex; align-items: center; gap: 0.3rem;
+            background: #fee2e2; color: #dc2626;
+            border: 1px solid #fecaca;
+            padding: 0.3rem 0.85rem; border-radius: 8px;
+            font-size: 0.78rem; font-weight: 600;
+            cursor: pointer; transition: background 0.2s;
+            font-family: inherit;
+        }
+        .btn-delete:hover { background: #fecaca; }
+
+        .alert {
+            padding: 0.9rem 1.25rem; border-radius: 10px;
+            margin-bottom: 1.5rem; font-size: 0.875rem; font-weight: 500;
+        }
+        .alert-success { background: var(--success-bg); color: var(--success-text); border: 1px solid #bbf7d0; }
+        .alert-error   { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+
         .values-area {
             padding: 1.25rem 1.5rem;
         }
@@ -156,6 +186,13 @@
             <p>All columns saved from Excel files — stored as imploded strings, displayed as exploded values.</p>
         </header>
 
+        @if(session('success'))
+            <div class="alert alert-success">✅ {{ session('success') }}</div>
+        @endif
+        @if(session('error'))
+            <div class="alert alert-error">❌ {{ session('error') }}</div>
+        @endif
+
         @if($records->isEmpty())
             <div class="card">
                 <div class="empty">
@@ -171,10 +208,17 @@
                             <h3>{{ $record->column_name }}</h3>
                             <p>Excel Header: <strong>{{ $record->excel_column }}</strong> &nbsp;·&nbsp; Saved: {{ $record->created_at->diffForHumans() }}</p>
                         </div>
-                        <div class="meta-badges">
+                        <div class="action-btns">
                             <span class="badge badge-green">{{ count($record->values) }} values</span>
                             <span class="badge badge-gray">ID #{{ $record->id }}</span>
                             <a href="{{ route('mail.compose') }}" class="btn-send-mail">✉️ Send Mail</a>
+                            <a href="{{ route('excel.edit', $record->id) }}" class="btn-edit">✏️ Edit</a>
+                            <form action="{{ route('excel.destroy', $record->id) }}" method="POST"
+                                  onsubmit="return confirm('Delete record &quot;{{ addslashes($record->column_name) }}&quot;? This cannot be undone.')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn-delete">🗑️ Delete</button>
+                            </form>
                         </div>
                     </div>
 

@@ -12,45 +12,52 @@ class InvitationMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    /**
-     * @param string $subject   The email subject
-     * @param string $body      The email body message
-     * @param string $fromName  Sender display name
-     */
-    public function __construct(
-        public string $subject,
-        public string $body,
-        public string $fromName = 'TC Invitation',
-    ) {}
+    public $body;
+    public $fromName;
+    public $recipientEmail;
+    public $recipientName;
+    public $appStoreLink;
+    public $playStoreLink;
 
-    /**
-     * Get the message envelope (subject + sender).
-     */
-    public function envelope(): Envelope
-    {
-        return new Envelope(
-            subject: $this->subject,
-        );
+    public function __construct(
+        $subject,
+        $body,
+        $fromName       = 'Task Concierge',
+        $recipientEmail = '',
+        $recipientName  = '',
+        $appStoreLink   = '#',
+        $playStoreLink  = '#'
+    ) {
+        $this->subject        = $subject;
+        $this->body           = $body;
+        $this->fromName       = $fromName;
+        $this->recipientEmail = $recipientEmail;
+        $this->recipientName  = $recipientName;
+        $this->appStoreLink   = $appStoreLink;
+        $this->playStoreLink  = $playStoreLink;
     }
 
-    /**
-     * Get the message content — uses our custom blade template.
-     */
+    public function envelope(): Envelope
+    {
+        return new Envelope(subject: $this->subject);
+    }
+
     public function content(): Content
     {
         return new Content(
             view: 'emails.invitation',
             with: [
-                'emailBody'  => $this->body,
-                'fromName'   => $this->fromName,
-                'emailSubject' => $this->subject,
+                'emailBody'      => $this->body,
+                'fromName'       => $this->fromName,
+                'emailSubject'   => $this->subject,
+                'recipientEmail' => $this->recipientEmail,
+                'recipientName'  => $this->recipientName,
+                'appStoreLink'   => $this->appStoreLink,
+                'playStoreLink'  => $this->playStoreLink,
             ],
         );
     }
 
-    /**
-     * No attachments.
-     */
     public function attachments(): array
     {
         return [];
